@@ -2,13 +2,13 @@ import asyncio
 import logging
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
+from aiohttp import web
+import os
 
-# ВСТАВЬ СЮДА СВОЙ ТОКЕН (вместо моего)
 TOKEN = '8949226817:AAGj5P0MAH9_fB_5NkphquelEEqJJePg4kY'
 ADMIN_ID = 123456789 
 
 logging.basicConfig(level=logging.INFO)
-
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
@@ -32,12 +32,23 @@ async def handle_all(message: types.Message):
             await bot.send_photo(ADMIN_ID, photo=message.photo[-1].file_id, caption='Фото белки')
         if message.location:
             await bot.send_location(ADMIN_ID, latitude=message.location.latitude, longitude=message.location.longitude)
-        
         await message.answer('Спасибо! Я получил информацию и скоро проверю её. 💚')
     except Exception as e:
         await message.answer('Ой, произошла ошибка. Попробуйте позже.')
 
+async def handle(request):
+    return web.Response(text="Bot is running!")
+
+async def start_web_server():
+    app = web.Application()
+    app.router.add_get('/', handle)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', int(os.environ.get('PORT', 8080)))
+    await site.start()
+
 async def main():
+    await start_web_server()
     await dp.start_polling(bot)
 
 if __name__ == '__main__':
