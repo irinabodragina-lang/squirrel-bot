@@ -6,7 +6,7 @@ from aiohttp import web
 import os
 
 TOKEN = '8949226817:AAHe6qwcBQj1xXRqnaVFu4TUREhcu7tFtLM'
-ADMIN_ID = 123456789 
+ADMIN_ID = 348348443 
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TOKEN)
