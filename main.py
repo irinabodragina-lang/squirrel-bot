@@ -5,7 +5,7 @@ from aiogram.filters import Command
 from aiohttp import web
 import os
 
-TOKEN = '8949226817:AAGj5P0MAH9_fB_5NkphquelEEqJJePg4kY'
+TOKEN = '8949226817:AAHe6qwcBQj1xXRqnaVFu4TUREhcu7tFtLM'
 ADMIN_ID = 123456789 
 
 logging.basicConfig(level=logging.INFO)
