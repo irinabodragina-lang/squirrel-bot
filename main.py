@@ -22,7 +22,7 @@ async def cmd_help(message: types.Message):
 
 @dp.message(Command('map'))
 async def cmd_map(message: types.Message):
-    await message.answer('Ссылка на карту: https://yandex.ru/maps/213/moscow/')
+    await message.answer('Ссылка на карту: https://yandex.ru/maps/?um=constructor%3Abcb9c067dd410bbccf73bfa96bac805b7b61fa653c476d33cc59745a37ae09de&source=constructorLink')
 
 @dp.message()
 async def handle_all(message: types.Message):
