@@ -27,7 +27,7 @@ async def cmd_map(message: types.Message):
 @dp.message()
 async def handle_all(message: types.Message):
     try:
-        await bot.send_message(ADMIN_ID, f'Новая заявка от @{message.from_user.username}!\nТекст: {message.text if message.text else "Нет текста"}')
+        await bot.send_message(ADMIN_ID, f'Новая заявка от @{message.from_user.username}!\nТекст: {message.caption or message.text or "Нет текста"}')
         if message.photo:
             await bot.send_photo(ADMIN_ID, photo=message.photo[-1].file_id, caption='Фото белки')
         if message.location:
