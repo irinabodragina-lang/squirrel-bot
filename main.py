@@ -17,7 +17,7 @@ try:
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     creds = ServiceAccountCredentials.from_json_keyfile_name("/etc/secrets/creds.json", scope)
     client = gspread.authorize(creds)
-    sheet = client.open("База белок").sheet1
+    sheet = client.open("База белок").get_worksheet(0)
     logging.info("=== УСПЕШНО ПОДКЛЮЧИЛИСЬ К ТАБЛИЦЕ! ===")
 except Exception as e:
     logging.error(f"!!! ОШИБКА ПРИ ПОДКЛЮЧЕНИИ К ТАБЛИЦЕ: {e} !!!")
