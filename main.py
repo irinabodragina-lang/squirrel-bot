@@ -1,9 +1,10 @@
-import asyncio 
+import asyncio
 import logging
+import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiohttp import web
-import os
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
@@ -30,39 +31,43 @@ dp = Dispatcher()
 async def cmd_start(message: types.Message):
     await message.answer('Привет! Добро пожаловать в Беличью карту. 🐿️🤍\nПришли мне фото белки и напиши адрес, где ты её видел.')
 
-@dp.message(Command('help'))
-async def cmd_help(message: types.Message):
-    await message.answer('Как это работает:\n1. Отправь геолокацию или напиши адрес.\n2. Прикрепи фото.\n3. Напиши пару слов о белке.\nЯ проверю и добавлю её на карту!')
-
-@dp.message(Command('map'))
-async def cmd_map(message: types.Message):
-    await message.answer('Ссылка на карту: https://yandex.ru/maps/?um=constructor%3Abcb9c067dd410bbccf73bfa96bac805b7b61fa653c476d33cc59745a37ae09de&source=constructorLink')
-
 @dp.message()
 async def handle_all(message: types.Message):
     try:
-        # Сохранение в Google Таблицу
         try:
             photo_id = message.photo[-1].file_id if message.photo else ""
             lat = message.location.latitude if message.location else ""
             lon = message.location.longitude if message.location else ""
             text = message.caption or message.text or "Нет текста"
             username = f"@{message.from_user.username}" if message.from_user.username else str(message.from_user.id)
-            
             sheet.append_row([str(datetime.now()), username, text, photo_id, lat, lon])
         except Exception as e:
             logging.error(f"Ошибка записи в таблицу: {e}")
 
         await bot.send_message(ADMIN_ID, f'Новая заявка от @{message.from_user.username}!\nТекст: {message.caption or message.text or "Нет текста"}')
-        
         if message.photo:
             await bot.send_photo(ADMIN_ID, photo=message.photo[-1].file_id, caption='Фото белки')
-        if message.location:
-            await bot.send_location(ADMIN_ID, latitude=message.location.latitude, longitude=message.location.longitude)
-            
-        await message.answer('Спасибо! Я получил информацию и скоро проверю её. 💚')
+        await message.answer('Спасибо! Я получил информацию. 💚')
     except Exception as e:
-        await message.answer('Ой, произошла ошибка. Попробуйте позже.')
+        await message.answer('Ой, ошибка. Попробуйте позже.')
+
+async def on_startup(bot: Bot):
+    webhook_url = "https://squirrel-bot-6hfi.onrender.com/webhook"
+    await bot.set_webhook(webhook_url)
+    logging.info(f"Webhook установлен: {webhook_url}")
+
+async def main():
+    app = web.Application()
+    webhook_requests_handler = SimpleRequestHandler(dispatcher=dp, bot=bot)
+    webhook_requests_handler.register(app, path="/webhook")
+    setup_application(app, dp, bot=bot)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', int(os.environ.get("PORT", 8080)))
+    await site.start()
+    await on_startup(bot)
+    logging.info("Сервер запущен!")
+    await asyncio.Event().wait()
 
 if __name__ == "__main__":
-    dp.run_polling(bot)
+    asyncio.run(main())
