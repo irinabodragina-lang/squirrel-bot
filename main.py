@@ -35,7 +35,7 @@ async def cmd_start(message: types.Message):
 async def handle_all(message: types.Message):
     try:
         try:
-            photo_id = message.photo[-1].file_id if message.photo else ""
+            photo_id = f"https://api.telegram.org/file/bot{TOKEN}/{message.photo[-1].file_id}" if message.photo else ""
             lat = message.location.latitude if message.location else ""
             lon = message.location.longitude if message.location else ""
             text = message.caption or message.text or "Нет текста"
