@@ -20,7 +20,7 @@ else:
     creds_dict = json.loads(creds_json)
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     client = gspread.authorize(creds)
-    sheet = client.open("База белок").sheet1
+    sheet = client.open_by_key("1BPzjJlAP2-KAhaQbiiirV_TucQEvs9g-SFK5f1vn0rc").sheet1
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TOKEN)
