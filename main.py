@@ -9,10 +9,11 @@ from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 
 TOKEN = '8949226817:AAHe6qwcBQj1xXRqnaVFu4TUREhcu7tFtLM'
-ADMIN_ID = 348348443 
-# Подключение к Google Таблицам
+ADMIN_ID = 348348443
+import json
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
+creds_dict = json.loads(os.environ.get('GOOGLE_CREDS'))
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 sheet = client.open("База белок").sheet1
 
