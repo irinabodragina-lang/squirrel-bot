@@ -8,14 +8,21 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 
+logging.basicConfig(level=logging.INFO)
+
 TOKEN = '8949226817:AAHe6qwcBQj1xXRqnaVFu4TUREhcu7tFtLM'
 ADMIN_ID = 348348443
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("/etc/secrets/creds.json", scope)
-client = gspread.authorize(creds)
-sheet = client.open("База белок").sheet1
 
-logging.basicConfig(level=logging.INFO)
+try:
+    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    creds = ServiceAccountCredentials.from_json_keyfile_name("/etc/secrets/creds.json", scope)
+    client = gspread.authorize(creds)
+    sheet = client.open("База белок").sheet1
+    logging.info("=== УСПЕШНО ПОДКЛЮЧИЛИСЬ К ТАБЛИЦЕ! ===")
+except Exception as e:
+    logging.error(f"!!! ОШИБКА ПРИ ПОДКЛЮЧЕНИИ К ТАБЛИЦЕ: {e} !!!")
+    raise e
+
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
