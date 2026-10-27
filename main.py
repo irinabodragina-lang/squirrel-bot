@@ -10,7 +10,7 @@ from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)
 
-TOKEN = '8949226817:AAHe6qwcBQj1xXRqnaVFu4TUREhcu7tFtLM'
+TOKEN = '8949226817:AAHVDlIOV1yM1pusTSeRr2jQbiO3_uqpBA4'
 ADMIN_ID = 348348443
 
 try:
