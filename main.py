@@ -10,17 +10,10 @@ from datetime import datetime
 
 TOKEN = '8949226817:AAHe6qwcBQj1xXRqnaVFu4TUREhcu7tFtLM'
 ADMIN_ID = 348348443
-import json
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds_json = os.environ.get('GOOGLE_CREDS')
-if not creds_json:
-    logging.error("Переменная GOOGLE_CREDS не найдена!")
-else:
-    logging.info("Переменная GOOGLE_CREDS успешно загружена.")
-    creds_dict = json.loads(creds_json)
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-    client = gspread.authorize(creds)
-    sheet = client.open_by_key("1BPzjJlAP2-KAhaQbiiirV_TucQEvs9g-SFK5f1vn0rc").sheet1
+creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
+client = gspread.authorize(creds)
+sheet = client.open("База белок").sheet1
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TOKEN)
