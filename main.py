@@ -4,9 +4,17 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiohttp import web
 import os
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+from datetime import datetime
 
 TOKEN = '8949226817:AAHe6qwcBQj1xXRqnaVFu4TUREhcu7tFtLM'
 ADMIN_ID = 348348443 
+# Подключение к Google Таблицам
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
+client = gspread.authorize(creds)
+sheet = client.open("База белок").sheet1
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TOKEN)
@@ -27,29 +35,25 @@ async def cmd_map(message: types.Message):
 @dp.message()
 async def handle_all(message: types.Message):
     try:
+        # Сохранение в Google Таблицу
+        try:
+            photo_id = message.photo[-1].file_id if message.photo else ""
+            lat = message.location.latitude if message.location else ""
+            lon = message.location.longitude if message.location else ""
+            text = message.caption or message.text or "Нет текста"
+            username = f"@{message.from_user.username}" if message.from_user.username else str(message.from_user.id)
+            
+            sheet.append_row([str(datetime.now()), username, text, photo_id, lat, lon])
+        except Exception as e:
+            logging.error(f"Ошибка записи в таблицу: {e}")
+
         await bot.send_message(ADMIN_ID, f'Новая заявка от @{message.from_user.username}!\nТекст: {message.caption or message.text or "Нет текста"}')
+        
         if message.photo:
             await bot.send_photo(ADMIN_ID, photo=message.photo[-1].file_id, caption='Фото белки')
         if message.location:
             await bot.send_location(ADMIN_ID, latitude=message.location.latitude, longitude=message.location.longitude)
+            
         await message.answer('Спасибо! Я получил информацию и скоро проверю её. 💚')
     except Exception as e:
         await message.answer('Ой, произошла ошибка. Попробуйте позже.')
-
-async def handle(request):
-    return web.Response(text="Bot is running!")
-
-async def start_web_server():
-    app = web.Application()
-    app.router.add_get('/', handle)
-    runner = web.AppRunner(app)
-    await runner.setup()
-    site = web.TCPSite(runner, '0.0.0.0', int(os.environ.get('PORT', 8080)))
-    await site.start()
-
-async def main():
-    await start_web_server()
-    await dp.start_polling(bot)
-
-if __name__ == '__main__':
-    asyncio.run(main())
