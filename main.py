@@ -30,7 +30,14 @@ dp = Dispatcher()
 @dp.message(Command('start'))
 async def cmd_start(message: types.Message):
     await message.answer('Привет! Добро пожаловать в Беличью карту. 🐿️🤍\nПришли мне фото белки и напиши адрес, где ты её видел.')
+    
+@dp.message(Command('help'))
+async def cmd_help(message: types.Message):
+    await message.answer('Как это работает:\n1. Отправь геолокацию или напиши адрес.\n2. Прикрепи фото.\n3. Напиши пару слов о белке.\nЯ проверю и добавлю её на карту!')
 
+@dp.message(Command('map'))
+async def cmd_map(message: types.Message):
+    await message.answer('Ссылка на карту: https://yandex.ru/maps/?um=constructor%3Abcb9c067dd410bbccf73bfa96bac805b7b61fa653c476d33cc59745a37ae09de&source=constructorLink')
 @dp.message()
 async def handle_all(message: types.Message):
     try:
